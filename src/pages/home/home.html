@@ -1,17 +1,14 @@
-<ion-header>
+<ion-header>  
   <ion-navbar>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
+    <ion-title>Fast Analytics</ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <ion-list>
-    <ion-item *ngFor="let carro of carros" (click)="selecionaCarro(carro)">
-      <h2>{{carro.nome}}</h2>
-      <p>{{carro.preco}}</p>
-    </ion-item>
-  </ion-list>
+<ion-content has header>
+  <super-tabs *ngIf='tabs.length > 0'  [scrollTabs]="true" [config]="config" toolbarColor="KPI" indicatorColor="KPI">
+    <super-tab *ngFor='let tab of tabs' [root]="dashboardPage"  [title]="tab.nomeDash" [rootParams]='tab' ></super-tab>
+  </super-tabs>
 </ion-content>

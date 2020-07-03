@@ -1,8 +1,14 @@
 {
   "name": "DiniProjetoTeste",
-  "app_id": "",
-  "type": "ionic-angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "type": "ionic-angular",
+  "proxies": [
+    {
+      "path": "/gooddata",
+      "proxyUrl": "http://localhost:5050/"
+    }
+  ],
+  "app_id": ""
 }

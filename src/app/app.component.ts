@@ -1,30 +1,43 @@
-import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { Nav, Platform, LoadingController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
+//LOCAL
+import { LoginService } from '../providers/login-service/login-service';
+import { AgendamentoDaoProvider } from '../providers/agendamento-dao/agendamento-dao';
+import { OneSignal } from '@ionic-native/onesignal';
+//import { TabsPage } from '../pages/tabs/tab';
+import { ProjectsService } from '../providers/project-service/project-service';
+import { SessionService } from '../providers/session-service/session-service';
+import { NewGDDash } from '../pages/NewGDDash/NewGDDash';
 
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp {
-  @ViewChild(Nav) nav: Nav;
+export class MyApp implements OnInit {
+  
+  rootPage: any; 
 
-  rootPage: any = HomePage;
+  constructor(public platform: Platform, 
+              public statusBar: StatusBar, 
+              public splashScreen: SplashScreen,
+              private _onesignal: OneSignal,
+              private _loginService: LoginService,
+              public _sessionService: SessionService,
+              private _projectService: ProjectsService,
+              private _agendamentoDAO: AgendamentoDaoProvider) {
+    this.initializeApp()
+    
+  }
+  ngOnInit(): void {
+    this.populaTab();
+    this.rootPage = NewGDDash;
+  }  
 
-  pages: Array<{title: string, component: any}>;
-
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
-    this.initializeApp();
-
-    // used for an example of ngFor and navigation
-    this.pages = [
-      { title: 'Home', component: HomePage },
-      { title: 'List', component: ListPage }
-    ];
-
+  async populaTab(){
+    await this._loginService.doLogin();
+    await this._projectService.getProjects();
   }
 
   initializeApp() {
@@ -33,12 +46,41 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+      
+      /*
+      //configurando o onesignal
+      let iosConfigs = {
+        kOSSettingsKeyAutoPrompt: true,
+        kOSSetiingsKeyInAppLaunchURL: false
+      }
+
+      
+      this._onesignal.startInit('94f556e2-186e-41cf-b6dd-864dfb40ea43','662153221708');
+
+      this._onesignal.inFocusDisplaying(this._onesignal.OSInFocusDisplayOption.Notification);
+
+      this._onesignal.handleNotificationReceived()
+        .subscribe(
+          (notificacao: OSNotification) => {
+            let dadosAdicionais = notificacao.payload.additionalData
+            let agendamentoID = dadosAdicionais['agendamento-id'];
+
+            this._agendamentoDAO.recupera(agendamentoID)
+              .subscribe(
+                (agendamento: Agendamento) => {
+                  agendamento.confirmado = true;
+
+                  this._agendamentoDAO.salva(agendamento);
+                }
+              )           
+          }
+        )
+
+      this._onesignal.endInit();
+    
+          */
     });
   }
 
-  openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
-  }
 }

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, LoadingController, AlertController } from 'ionic-angular';
+import { NavController, LoadingController, AlertController, NavParams } from 'ionic-angular';
 import { Carro } from '../../Modelos/Carro';
-import { HttpErrorResponse} from '@angular/common/http';
-import { AppDiniServiceProvider } from '../../providers/app-dini-service/app-dini-service';
 import { NavLifecycles } from '../../Utils/ionic/nav/nav-lifecycles';
 import { EscolhaPage } from '../escolha/escolha';
+import { GDPage } from '../GD/GD';
+import { SessionService } from '../../providers/session-service/session-service';
 
 @Component({
   selector: 'page-home',
@@ -12,45 +12,31 @@ import { EscolhaPage } from '../escolha/escolha';
 })
 export class HomePage implements NavLifecycles {
   
-  public carros: Carro[];
+  project: any;
+	scrollableTabsopts: any = {};
+	dashboardPage: any = GDPage;
+
+	tabsColor: string = "default";
+	tabsMode: string = "md";
+	tabsPlacement: string = "top";
+
+	tabs: any[] = [];
+	config = {
+		dragThreshold: 40,
+		maxDragAngle: 15
+	}
+
+	private _rateTimer;
   
   constructor(public navCtrl: NavController,
-              private _loadingCtrl: LoadingController,
-              private _alertCtrl: AlertController,
-              public _carrosService: AppDiniServiceProvider) {
+              public navParams: NavParams,
+              public _sessionService: SessionService ) {
+                this.tabs = this._sessionService.infoDash;
+                
   }
 
+
+  
   ionViewDidLoad(){
-    let loading = this._loadingCtrl.create({
-      spinner: 'dots',
-      content: 'Carregando...'
-    });
-
-    loading.present();
-
-    this._carrosService.lista().subscribe(
-      (carros) => {
-        this.carros = carros;
-        loading.dismiss();
-        },
-        (err: HttpErrorResponse) =>{
-          console.log(err);
-          loading.dismiss();
-          this._alertCtrl.create({
-            title: 'Falha na conexão',
-            subTitle: 'Não foi possível carregar a a lista de carros. Tente novamente!',
-            buttons:[{
-              text: 'Ok'}
-            ]
-          }).present();
-        }
-      )
   }
-
-  selecionaCarro(carro: Carro){
-    this.navCtrl.push(EscolhaPage.name,{
-      'carroSelecionado': carro
-    });
-  }
-
 }
